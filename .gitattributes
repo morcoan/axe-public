@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+*.rs text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.ps1 text eol=lf
+*.cmd text eol=crlf

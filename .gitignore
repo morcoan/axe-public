@@ -1,0 +1,23 @@
+target/
+Cargo.lock.bak
+out/
+
+# Analyst run-output from running axe-core against the
+# calibration binary set — same category as out/: large
+# generated JSONL/JSON/SQLite per-binary, not source.
+calibration_runs/
+
+# Claude Code agent session state — not part of the project source.
+.claude/
+
+# Legacy Python remnants — runtime/build artifacts from the pre-v1 toolchain.
+# Safe to delete from working tree; not part of the v1+ build.
+.venv/
+__pycache__/
+*.py[cod]
+OFFLINE/
+OFFLINE_*/
+RE_EVAL_OUT*/
+RE_EVAL_FULL_AUTO/
+RE_EVAL_*_VERIFY/
+tmp*/

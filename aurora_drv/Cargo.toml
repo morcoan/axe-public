@@ -1,0 +1,24 @@
+# Standalone workspace — aurora_drv is intentionally NOT part
+# of the axe-core workspace (kernel-driver build requires
+# nightly + custom target spec + WDK; most analysts don't have
+# this set up). The empty `[workspace]` table here breaks the
+# parent-workspace auto-discovery so `cargo` operations against
+# this manifest don't fight with the root.
+[workspace]
+
+[package]
+name = "aurora_drv"
+version = "0.1.0"
+edition = "2021"
+description = "Aurora kernel driver — VM-artifact hiding at the syscall layer. Production .sys build requires EWDK + test-signing mode. See README.md."
+publish = false
+
+[lib]
+name = "aurora_drv"
+crate-type = ["staticlib"]
+
+# Intentionally MINIMAL dependencies — a real kernel driver
+# cannot link against std. This crate ships as a no_std-ready
+# skeleton documenting the IOCTL contract; the actual .sys
+# binary is built via the EWDK toolchain (see README.md).
+[dependencies]

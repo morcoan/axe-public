@@ -1,0 +1,189 @@
+{
+  "schema": "axe_benchmark_manifest/1",
+  "cases": [
+    {
+      "id": "fts-cares-cve-2016-5180",
+      "path": "../../out/real9_fixtures/fts-cares-cve-2016-5180/target.bin",
+      "corpus": "source_built_real9_external",
+      "vuln_id": "CVE-2016-5180",
+      "source_url": "https://github.com/google/fuzzer-test-suite.git",
+      "source_ref": "6955fc97efedfda7dcc0979658b169d7eeb5ccd6",
+      "fixture_subdir": "c-ares-CVE-2016-5180",
+      "expected_clean": false,
+      "expected_findings": [
+        {
+          "id": "cares_create_query_overflow",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "network_recv",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "confirmed_trigger",
+          "require_proof_packet": true,
+          "required_evidence_source": "fuzz",
+          "collapse_key": "unchecked_copy_length:network_recv:memcpy",
+          "min_rank": 25,
+          "allow_duplicate_matches": true
+        }
+      ],
+      "allowed_misses": 0,
+      "false_positive_cap": 1,
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 25,
+      "notes": "External fuzzer-test-suite case for c-ares CVE-2016-5180; stage source-built target under out/real9_fixtures before enabling dynamic execution."
+    },
+    {
+      "id": "fts-openssl-cve-2014-0160",
+      "path": "../../out/real9_fixtures/fts-openssl-cve-2014-0160/target.bin",
+      "corpus": "source_built_real9_external",
+      "vuln_id": "CVE-2014-0160",
+      "source_url": "https://github.com/google/fuzzer-test-suite.git",
+      "source_ref": "6955fc97efedfda7dcc0979658b169d7eeb5ccd6",
+      "fixture_subdir": "openssl-1.0.1f",
+      "expected_clean": false,
+      "expected_findings": [
+        {
+          "id": "openssl_heartbleed_overread",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "network_recv",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "confirmed_trigger",
+          "require_proof_packet": true,
+          "required_evidence_source": "fuzz",
+          "collapse_key": "unchecked_copy_length:network_recv:memcpy",
+          "min_rank": 25,
+          "allow_duplicate_matches": true
+        }
+      ],
+      "allowed_misses": 0,
+      "false_positive_cap": 1,
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 25,
+      "notes": "External fuzzer-test-suite OpenSSL 1.0.1f Heartbleed target; user-mode only, no system install."
+    },
+    {
+      "id": "fts-libxml2-cve-2015-8317",
+      "path": "../../out/real9_fixtures/fts-libxml2-cve-2015-8317/target.bin",
+      "corpus": "source_built_real9_external",
+      "vuln_id": "CVE-2015-8317",
+      "source_url": "https://github.com/google/fuzzer-test-suite.git",
+      "source_ref": "6955fc97efedfda7dcc0979658b169d7eeb5ccd6",
+      "fixture_subdir": "libxml2-v2.9.2",
+      "expected_clean": false,
+      "expected_findings": [
+        {
+          "id": "libxml2_xml_decl_oob_read",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "file_read",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "confirmed_trigger",
+          "require_proof_packet": true,
+          "required_evidence_source": "fuzz",
+          "collapse_key": "unchecked_copy_length:file_read:memcpy",
+          "min_rank": 25,
+          "allow_duplicate_matches": true
+        }
+      ],
+      "allowed_misses": 0,
+      "false_positive_cap": 1,
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 25,
+      "notes": "External fuzzer-test-suite libxml2 v2.9.2 target; source-built fixture only."
+    },
+    {
+      "id": "fts-libpng-1-2-56",
+      "path": "../../out/real9_fixtures/fts-libpng-1-2-56/target.bin",
+      "corpus": "source_built_real9_external",
+      "vuln_id": "FTS:libpng-1.2.56",
+      "source_url": "https://github.com/google/fuzzer-test-suite.git",
+      "source_ref": "6955fc97efedfda7dcc0979658b169d7eeb5ccd6",
+      "fixture_subdir": "libpng-1.2.56",
+      "expected_clean": false,
+      "expected_findings": [
+        {
+          "id": "libpng_external_parser_bug",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "file_read",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "confirmed_trigger",
+          "require_proof_packet": true,
+          "required_evidence_source": "fuzz",
+          "collapse_key": "unchecked_copy_length:file_read:memcpy",
+          "min_rank": 25,
+          "allow_duplicate_matches": true
+        }
+      ],
+      "allowed_misses": 0,
+      "false_positive_cap": 1,
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 25,
+      "notes": "External fuzzer-test-suite libpng parser target."
+    },
+    {
+      "id": "fts-woff2-2016-05-06",
+      "path": "../../out/real9_fixtures/fts-woff2-2016-05-06/target.bin",
+      "corpus": "source_built_real9_external",
+      "vuln_id": "FTS:woff2-2016-05-06",
+      "source_url": "https://github.com/google/fuzzer-test-suite.git",
+      "source_ref": "6955fc97efedfda7dcc0979658b169d7eeb5ccd6",
+      "fixture_subdir": "woff2-2016-05-06",
+      "expected_clean": false,
+      "expected_findings": [
+        {
+          "id": "woff2_external_parser_bug",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "file_read",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "confirmed_trigger",
+          "require_proof_packet": true,
+          "required_evidence_source": "fuzz",
+          "collapse_key": "unchecked_copy_length:file_read:memcpy",
+          "min_rank": 25,
+          "allow_duplicate_matches": true
+        }
+      ],
+      "allowed_misses": 0,
+      "false_positive_cap": 1,
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 25,
+      "notes": "External fuzzer-test-suite WOFF2 parser target."
+    },
+    {
+      "id": "baseline-clean-fixed-cares",
+      "path": "../../out/real9_fixtures/baseline-clean-fixed-cares/target.bin",
+      "corpus": "source_built_real9_clean_baseline",
+      "vuln_id": "clean-baseline",
+      "source_url": "https://github.com/c-ares/c-ares.git",
+      "source_ref": "3ac47ee46edd8ea40370222f91613fc16c434853",
+      "fixture_build_kind": "cmake_cares_aresfuzz",
+      "expected_clean": true,
+      "expected_findings": [],
+      "allowed_misses": 0,
+      "false_positive_cap": 0,
+      "require_dynamic_confirmation": false,
+      "require_proof_packets": false,
+      "top_k": 25,
+      "notes": "Clean c-ares baseline pinned to upstream v1.34.6 peeled commit. Real-9 counts any finding here as a false positive."
+    },
+    {
+      "id": "baseline-clean-fixed-libxml2",
+      "path": "../../out/real9_fixtures/baseline-clean-fixed-libxml2/target.bin",
+      "corpus": "source_built_real9_clean_baseline",
+      "vuln_id": "clean-baseline",
+      "source_url": "https://gitlab.gnome.org/GNOME/libxml2.git",
+      "source_ref": "04af2cabb9f859c198b8a553c028a87481199410",
+      "fixture_build_kind": "cmake_libxml2_xmllint",
+      "expected_clean": true,
+      "expected_findings": [],
+      "allowed_misses": 0,
+      "false_positive_cap": 0,
+      "require_dynamic_confirmation": false,
+      "require_proof_packets": false,
+      "top_k": 25,
+      "notes": "Clean libxml2 baseline pinned to upstream v2.13.9 peeled commit. Real-9 counts any finding here as a false positive."
+    }
+  ]
+}

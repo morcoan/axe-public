@@ -1,0 +1,11 @@
+// === function_0000000000000000.c ===
+#include <stdint.h>
+/* decompiled by rerun; uintN_t locals; goto-form for irreducible regions */
+
+uint64_t function_0000000000000000(uint64_t rcx_in) {
+    uint64_t rax; /* rax */
+    uint64_t rcx; /* rcx */
+
+    /* test rcx, rcx */  /* 0x0000000000000000: test rcx,rcx */
+    return ((rcx != 0) ? rcx : rax);  /* 0x0000000000000007: ret  */
+}

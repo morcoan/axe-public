@@ -1,0 +1,17 @@
+// === function_0000000000000000.c ===
+#include <stdint.h>
+/* decompiled by rerun; uintN_t locals; goto-form for irreducible regions */
+
+uint64_t function_0000000000000000(void) {
+    uint64_t local_rsp; /* rsp */
+
+    local_rsp -= 0x28;  /* 0x0000000000000000: sub rsp,28h */
+    rax = call_at_0x9();  /* 0x0000000000000004: call 9 */
+L_00000009:
+    rax = call_at_0xe();  /* 0x0000000000000009: call 000000000000000Eh */
+L_0000000E:
+    rax = call_at_0x13();  /* 0x000000000000000E: call 0000000000000013h */
+L_00000013:
+    local_rsp += 0x28;  /* 0x0000000000000013: add rsp,28h */
+    return rax;  /* 0x0000000000000017: ret  */
+}

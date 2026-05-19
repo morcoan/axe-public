@@ -1,0 +1,12 @@
+// === function_0000000000000000.c ===
+#include <stdint.h>
+/* decompiled by rerun; uintN_t locals; goto-form for irreducible regions */
+
+uint64_t function_0000000000000000(uint64_t rcx_in) {
+    uint8_t al; /* al */
+    uint64_t rcx; /* rcx */
+
+    /* test rcx, rcx */  /* 0x0000000000000000: test rcx,rcx */
+    al = (rcx == 0) ? 1 : 0;  /* 0x0000000000000003: sete al */
+    return ((uint64_t)(uint8_t)al);  /* 0x0000000000000009: ret  */
+}

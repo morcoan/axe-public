@@ -1,0 +1,11 @@
+// === function_0000000000000000.c ===
+#include <stdint.h>
+/* decompiled by rerun; uintN_t locals; goto-form for irreducible regions */
+
+uint64_t function_0000000000000000(void) {
+    uint32_t eax; /* eax */
+
+    /* cmp eax, 1 */  /* 0x0000000000000000: cmp eax,1 */
+    if (eax != 1) goto L_0000000B;  /* 0x0000000000000003: jne short 000000000000000Bh */
+    return (0x0a);  /* 0x000000000000000A: ret  */
+}

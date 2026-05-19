@@ -1,0 +1,18 @@
+[package]
+name = "aurora_stub"
+version = "0.1.0"
+edition = "2021"
+description = "Aurora's in-target stub DLL — uses retour to hook anti-anti-VM + anti-debug APIs after CreateRemoteThread+LoadLibrary injection."
+publish = false
+
+[lib]
+name = "aurora_stub"
+crate-type = ["cdylib"]
+
+[target.'cfg(windows)'.dependencies]
+retour = "0.3"
+windows = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_System_LibraryLoader",
+    "Win32_System_SystemServices",
+] }

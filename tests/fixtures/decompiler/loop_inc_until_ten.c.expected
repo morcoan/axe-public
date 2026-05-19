@@ -1,0 +1,15 @@
+// === function_0000000000000000.c ===
+#include <stdint.h>
+/* decompiled by rerun; uintN_t locals; goto-form for irreducible regions */
+
+uint64_t function_0000000000000000(void) {
+    uint32_t eax; /* eax */
+
+    /* structured: 4 region(s), 1 natural loop(s) */
+    eax = 0;  /* 0x0000000000000000: xor eax,eax */
+    do {
+        eax += 1;  /* 0x0000000000000002: inc eax */
+        /* cmp eax, 0Ah */  /* 0x0000000000000004: cmp eax,0Ah */
+    } while (eax != 0x0a);  /* 0x0000000000000007: jne short 2 */
+    return rax;  /* 0x0000000000000009: ret  */
+}

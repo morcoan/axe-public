@@ -1,0 +1,195 @@
+{
+  "schema": "axe_benchmark_manifest/1",
+  "cases": [
+    {
+      "id": "real8-net-triplet",
+      "path": "built/real8_net_triplet.exe",
+      "corpus": "source_built_real8",
+      "expected_clean": false,
+      "build": {
+        "source": "src/real8_net_triplet.c",
+        "output": "built/real8_net_triplet.exe",
+        "ldflags": ["-lws2_32"]
+      },
+      "dynamic_probe": {
+        "argv": ["--axe-probe"],
+        "evidence_source": "safe_fixture_probe",
+        "status": "reached_only",
+        "expect_stdout_contains": ["AXE_REAL8_PROBE:net_triplet"],
+        "observed": {
+          "route": "argv[1]=--axe-probe",
+          "fixture_family": "network recv memcpy malloc"
+        }
+      },
+      "expected_findings": [
+        {
+          "id": "triplet_memcpy_len",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "network_recv",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "reached_only",
+          "required_evidence_source": "safe_fixture_probe",
+          "require_proof_packet": true,
+          "collapse_key": "unchecked_copy_length:network_recv:memcpy",
+          "min_rank": 10
+        }
+      ],
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 10,
+      "notes": "Source-built planted network length and allocation bugs with safe fixture probe evidence."
+    },
+    {
+      "id": "real8-net-dispatch",
+      "path": "built/real8_net_dispatch.exe",
+      "corpus": "source_built_real8",
+      "expected_clean": false,
+      "build": {
+        "source": "src/real8_net_dispatch.c",
+        "output": "built/real8_net_dispatch.exe",
+        "ldflags": ["-lws2_32"]
+      },
+      "dynamic_probe": {
+        "argv": ["--axe-probe"],
+        "evidence_source": "safe_fixture_probe",
+        "status": "reached_only",
+        "expect_stdout_contains": ["AXE_REAL8_PROBE:net_dispatch"],
+        "observed": {
+          "route": "argv[1]=--axe-probe",
+          "fixture_family": "network dispatch wrappers"
+        }
+      },
+      "expected_findings": [
+        {
+          "id": "dispatch_memcpy_len",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "network_recv",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "reached_only",
+          "required_evidence_source": "safe_fixture_probe",
+          "require_proof_packet": true,
+          "collapse_key": "unchecked_copy_length:network_recv:memcpy",
+          "min_rank": 10
+        }
+      ],
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 10,
+      "notes": "Same planted bug classes through dispatch-style helpers."
+    },
+    {
+      "id": "real8-net-session",
+      "path": "built/real8_net_session.exe",
+      "corpus": "source_built_real8",
+      "expected_clean": false,
+      "build": {
+        "source": "src/real8_net_session.c",
+        "output": "built/real8_net_session.exe",
+        "ldflags": ["-lws2_32"]
+      },
+      "dynamic_probe": {
+        "argv": ["--axe-probe"],
+        "evidence_source": "safe_fixture_probe",
+        "status": "reached_only",
+        "expect_stdout_contains": ["AXE_REAL8_PROBE:net_session"],
+        "observed": {
+          "route": "argv[1]=--axe-probe",
+          "fixture_family": "network session handlers"
+        }
+      },
+      "expected_findings": [
+        {
+          "id": "session_memcpy_len",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "network_recv",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "reached_only",
+          "required_evidence_source": "safe_fixture_probe",
+          "require_proof_packet": true,
+          "collapse_key": "unchecked_copy_length:network_recv:memcpy",
+          "min_rank": 10
+        }
+      ],
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 10,
+      "notes": "Network session fixture with separate payload and allocation handlers."
+    },
+    {
+      "id": "real8-net-framed",
+      "path": "built/real8_net_framed.exe",
+      "corpus": "source_built_real8",
+      "expected_clean": false,
+      "build": {
+        "source": "src/real8_net_framed.c",
+        "output": "built/real8_net_framed.exe",
+        "ldflags": ["-lws2_32"]
+      },
+      "dynamic_probe": {
+        "argv": ["--axe-probe"],
+        "evidence_source": "safe_fixture_probe",
+        "status": "reached_only",
+        "expect_stdout_contains": ["AXE_REAL8_PROBE:net_framed"],
+        "observed": {
+          "route": "argv[1]=--axe-probe",
+          "fixture_family": "network framed protocol"
+        }
+      },
+      "expected_findings": [
+        {
+          "id": "framed_memcpy_len",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "network_recv",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "reached_only",
+          "required_evidence_source": "safe_fixture_probe",
+          "require_proof_packet": true,
+          "collapse_key": "unchecked_copy_length:network_recv:memcpy",
+          "min_rank": 10
+        }
+      ],
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 10,
+      "notes": "Framed protocol fixture with unbounded frame length."
+    },
+    {
+      "id": "real8-net-router",
+      "path": "built/real8_net_router.exe",
+      "corpus": "source_built_real8",
+      "expected_clean": false,
+      "build": {
+        "source": "src/real8_net_router.c",
+        "output": "built/real8_net_router.exe",
+        "ldflags": ["-lws2_32"]
+      },
+      "dynamic_probe": {
+        "argv": ["--axe-probe"],
+        "evidence_source": "safe_fixture_probe",
+        "status": "reached_only",
+        "expect_stdout_contains": ["AXE_REAL8_PROBE:net_router"],
+        "observed": {
+          "route": "argv[1]=--axe-probe",
+          "fixture_family": "network route handlers"
+        }
+      },
+      "expected_findings": [
+        {
+          "id": "router_memcpy_len",
+          "bug_class": "unchecked_copy_length",
+          "source_kind": "network_recv",
+          "sink_api": "memcpy",
+          "min_dynamic_status": "reached_only",
+          "required_evidence_source": "safe_fixture_probe",
+          "require_proof_packet": true,
+          "collapse_key": "unchecked_copy_length:network_recv:memcpy",
+          "min_rank": 10
+        }
+      ],
+      "require_dynamic_confirmation": true,
+      "require_proof_packets": true,
+      "top_k": 10,
+      "notes": "Router-style network fixture with distinct copy and allocation routes."
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+[workspace]
+# Workspace adds the Aurora artifacts that ship as separate
+# crates: the in-target stub DLL (`aurora_stub`, cdylib) and the
+# kernel driver source (`aurora_drv`, Rust skeleton — production
+# `.sys` builds via EWDK; see aurora_drv/README.md).
+members = [".", "aurora_stub"]
+# aurora_drv is intentionally NOT a default member: it requires
+# nightly + a custom target spec + WDK headers, which most
+# analysts don't have set up. Build it explicitly when needed.
+exclude = ["aurora_drv"]
+
+[package]
+name = "axe-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["morcoan <morcoan@users.noreply.github.com>"]
+description = "Deterministic reverse-engineering analysis engine and artifact generator."
+readme = "README.md"
+repository = "https://github.com/morcoan/axe-public"
+license-file = "LICENSE.md"
+
+[lib]
+name = "axe_core"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "axe"
+path = "src/bin/axe.rs"
+
+[[bin]]
+name = "axe-bench"
+path = "src/bin/axe-bench.rs"
+# axe-bench consumes `axe_core::vuln::dynamic_evidence::DynamicEvidence` and
+# `AnalysisOptions::vuln_dynamic_evidence` directly throughout the file; gate
+# the whole binary on `vuln-discovery` so default-feature builds skip it.
+required-features = ["vuln-discovery"]
+
+# Feature flags. The `fuzzer` feature pulls in the coverage-guided
+# fuzzer module (`src/fuzzer/`) along with LibAFL and its transitive
+# dependencies. It is intentionally OFF by default so the analyzer
+# binary stays cheap to build for users who don't need fuzzing.
+[features]
+default = []
+fuzzer = [
+    "dep:libafl",
+    "dep:libafl_bolts",
+    "dep:libafl_targets",
+    "dep:arbitrary",
+    "dep:ahash",
+    "dep:rusqlite",
+    "dep:blake3",
+]
+# The `concolic` feature pulls in the hybrid concolic executor with
+# the EXTERNAL SMT-LIB backend (shells out to a `z3` binary on PATH at
+# runtime). It implies `fuzzer` because the bidirectional bridge uses
+# FuzzCorpus, EmulatorExecutor, atomic_write, run_status, etc. No
+# compile-time Z3 link → no libclang/CMake dance on Windows.
+concolic = ["fuzzer", "dep:indexmap", "dep:smallvec"]
+# The in-process Z3 backend requires bindgen + libclang to compile the
+# z3 crate. Opt in only when the build environment has libclang.dll on
+# PATH (or LIBCLANG_PATH set) AND CMAKE_POLICY_VERSION_MINIMUM=3.5 is
+# set during the cold compile (~5-15min first build).
+concolic-z3-inproc = ["concolic", "dep:z3"]
+# The `dynamic-trace` feature pulls in the OS-agnostic dynamic-trace
+# pipeline (schema, SQLite store, behavior-fact detectors, LLM packer).
+# Standalone: does NOT imply `fuzzer` — atomic_write and run_status
+# types live in shared `src/atomic_write.rs` and `src/run_status.rs`
+# modules (extracted from fuzzer in Step 2 of the dynamic-trace plan).
+dynamic-trace = ["dep:rusqlite", "dep:blake3", "dep:crossbeam-channel"]
+# Windows-only ETW collector for `dynamic-trace`. Pulls in `ferrisetw`
+# (consumer-side ETW wrapper) and the `windows` crate for capability
+# probing (token elevation + privilege adjustment + session control).
+dynamic-trace-etw = ["dynamic-trace", "dep:ferrisetw", "dep:windows"]
+# The `vuln-discovery` feature pulls in the vulnerability-discovery
+# pipeline (evidence graph + arg-role sinks + interprocedural taint +
+# dominator/guard analysis + 12 bug-class templates + scoring + LLM
+# finding packets). Standalone — does NOT pull fuzzer / concolic /
+# dynamic-trace. v1.0 ships static-only; v1.1 sub-features below add
+# dynamic confirmation, harness synthesis, and lifetime templates on
+# top of a CALIBRATED v1.0 (see docs/vuln-calibration.md for the
+# real-binary calibration step that gates v1.1).
+vuln-discovery = ["dep:petgraph", "dep:bitvec", "dep:rusqlite"]
+# v1.1 sub-features (one or more can be on independently). Each adds
+# its own per-chain dynamic-evidence source; the base feature works
+# without any of them. Codex finding 1 fix: dynamic confirmation is
+# per-chain attributed; aggregate signals (FuzzReport fields, "trace
+# event in this process") add ZERO confidence.
+vuln-discovery-fuzz     = ["vuln-discovery", "fuzzer"]
+vuln-discovery-trace    = ["vuln-discovery", "dynamic-trace"]
+vuln-discovery-concolic = ["vuln-discovery", "concolic"]
+# v1.1 lifetime templates (UAF, double-free). Opt-in only at compile
+# time AND at runtime (--vuln-include-lifetime). They emit to a
+# separate `lifetime_candidates.jsonl` artifact and are EXCLUDED from
+# the default `evidence_bundle.json` top-N. Codex finding 3 fix.
+vuln-discovery-lifetime = ["vuln-discovery"]
+# The `unpack` feature pulls in the Aurora generic-unpacker module
+# (`src/unpack/`): controlled-execution debugger loop + guard-page
+# memory tracing + entropy/OEP heuristics + analyzable-snapshot dump,
+# with user-mode anti-anti-VM and anti-debug hook scaffolding. Windows-
+# only at the module level (`#[cfg(all(windows, feature = "unpack"))]`).
+# Output is an analyzable snapshot consumed by `PEImage::from_snapshot()`
+# back into axe-core's existing static + vuln-discovery pipeline. The
+# plan's adversarial-review fixes are baked in: PE reconstruction is
+# OUT of scope (snapshot only); BYOVD is OUT of scope (driver mode
+# requires test-signing or user-EV-sign); generic-unpacker capability
+# tiers are honest (UPX/MPRESS reliable; modern VMProtect non-goal).
+unpack = ["dep:retour", "dep:windows", "dep:blake3"]
+# Opt-in: WHP-based stealth tracer. Mutually exclusive with running
+# inside VMware/VirtualBox on the same host (requires Hyper-V enabled).
+# WHP binding crate evaluated at Step 34; fallback to direct
+# `windows-sys::Win32::System::Hypervisor` bindings if no crate works.
+unpack-whp = ["unpack"]
+# Opt-in: kernel-driver mode for VM-artifact hiding at the syscall
+# layer. REQUIRES Windows test-signing mode enabled OR a user-supplied
+# EV-signed `aurora_drv.sys` build. NEVER uses BYOVD. Driver crate
+# evaluated at Step 41 (windows-drivers-rs vs. C/C++ shim).
+unpack-driver = ["unpack"]
+# Opt-in: native-emulator integration for VMProtect/Themida handler
+# stepping. best_effort tier output; reliable only against legacy
+# protectors (VMProtect ≤2.x, Themida ≤2.x). Modern variants explicit
+# non-goal.
+unpack-emulation = ["unpack", "dep:unicorn-engine"]
+
+[dependencies]
+iced-x86 = "1.21"
+memmap2 = "0.9"
+object = "0.37"
+rayon = "1.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+clap = { version = "4", features = ["derive"] }
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+walkdir = "2"
+zip = "2"
+sevenz-rust = "0.6"
+tar = "0.4"
+flate2 = "1"
+ctrlc = "3.4"
+rustc-hash = "2"
+gimli = "0.32"
+pdb = "0.8"
+addr2line = "0.25"
+ms-pdb = "0.1"
+cpp_demangle = "0.4"
+msvc-demangler = "0.10"
+
+# Optional deps for the `fuzzer` feature. Each is `optional = true` so
+# the default build skips them entirely. `rusqlite` and `blake3` are
+# shared with `dynamic-trace` (declared once here, gated by both
+# feature lists).
+libafl         = { version = "0.13", optional = true, default-features = false, features = ["std", "derive"] }
+libafl_bolts   = { version = "0.13", optional = true, default-features = false, features = ["std"] }
+libafl_targets = { version = "0.13", optional = true, default-features = false, features = ["sancov_pcguard_hitcounts", "libfuzzer"] }
+arbitrary      = { version = "1.3", optional = true, features = ["derive"] }
+ahash          = { version = "0.8", optional = true }
+rusqlite       = { version = "0.31", optional = true, features = ["bundled"] }
+blake3         = { version = "1.5", optional = true }
+
+# Optional deps for the `concolic` feature. Z3 uses the `bundled`
+# feature (CMake against vendored Z3 submodule) for reproducible
+# builds without a system libz3. Cold first build is slow; CI cache
+# mandatory.
+z3       = { version = "0.12", optional = true, features = ["static-link-z3"] }
+indexmap = { version = "2", optional = true }
+smallvec = { version = "1", optional = true }
+
+# Optional deps for the `dynamic-trace` feature. `crossbeam-channel`
+# is the bounded MPSC primitive that sits between the ETW callback
+# thread and the SQLite writer (Codex finding 3: explicit drop
+# semantics rather than blocking the kernel buffer).
+crossbeam-channel = { version = "0.5", optional = true }
+
+# Optional deps for the `vuln-discovery` feature. `petgraph` is the
+# graph store for the EvidenceGraph (typed nodes/edges, traversal,
+# dominators). `bitvec` powers compact taint sets in call summaries.
+petgraph = { version = "0.6", optional = true }
+bitvec   = { version = "1",   optional = true }
+
+# Optional dep for the `unpack-emulation` feature. Unicorn is the
+# QEMU-derived CPU emulator used by `src/unpack/devirt/` to step
+# VMProtect/Themida handler dispatchers without native execution.
+# Heavy build; gated behind opt-in feature.
+unicorn-engine = { version = "2", optional = true }
+
+# Optional Windows-only deps for `dynamic-trace-etw` and `unpack`.
+#
+# `ferrisetw` is pinned to `=1.2.0` because it is "1.0+ WIP" per its
+# own README; pinning means the TraceCollector trait in
+# `src/dynamic_trace/collector.rs` is the swap point if a contingency
+# backend is needed (Codex finding 5 of the dynamic-trace plan).
+#
+# `retour` powers user-mode inline detours for `src/unpack/hooks/` —
+# anti-anti-VM and anti-debug suppression. Windows-only at the
+# module level (the unpack feature itself is meaningful only on
+# Windows; non-Windows builds with `--features unpack` compile a
+# stubbed module instead of the live debugger loop).
+#
+# `windows` is shared between `dynamic-trace-etw` (ETW / token /
+# session-control APIs) and `unpack` (debug API / memory API /
+# library loader / psapi / process status). Cargo unions feature
+# flags across consumers, so users on `dynamic-trace-etw` alone
+# without `unpack` only get the ETW slice at runtime — the extra
+# Win32 modules just compile but aren't referenced.
+[target.'cfg(windows)'.dependencies]
+ferrisetw = { version = "=1.2.0", optional = true }
+retour = { version = "0.3", optional = true }
+windows = { version = "0.59", optional = true, features = [
+    # Existing for `dynamic-trace-etw`:
+    "Win32_System_Threading",
+    "Win32_System_Diagnostics_Etw",
+    "Win32_System_SystemInformation",
+    "Win32_Security",
+    "Win32_Foundation",
+    # Added for `unpack` (Aurora generic-unpacker module):
+    "Win32_System_Diagnostics_Debug",     # WaitForDebugEvent, ContinueDebugEvent, DebugActiveProcess, SetThreadContext, GetThreadContext
+    "Win32_System_Memory",                # VirtualAllocEx, VirtualProtectEx, VirtualQueryEx, ReadProcessMemory, WriteProcessMemory
+    "Win32_System_ProcessStatus",         # EnumProcessModules, GetModuleInformation (psapi)
+    "Win32_System_LibraryLoader",         # GetProcAddress, GetModuleHandleW, LoadLibraryW
+    "Win32_System_Kernel",                # PEB/TEB layout types (NtCurrentTeb)
+    "Win32_System_SystemServices",        # IMAGE_DOS_HEADER, IMAGE_NT_HEADERS64 (for snapshot synthesis)
+    "Win32_Storage_FileSystem",           # INVALID_HANDLE_VALUE, file handle types
+    "Win32_System_Console",               # SetConsoleCtrlHandler (kill-switch)
+    "Win32_System_ErrorReporting",        # SetErrorMode (WerFault suppression)
+    "Win32_System_Hypervisor",            # WHvCreatePartition / WHvSetupPartition (unpack-whp feature)
+] }
+
+[dev-dependencies]
+tempfile = "3"
+assert_cmd = "2"
+predicates = "3"
+object = { version = "0.37", features = ["write"] }

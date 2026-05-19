@@ -1,0 +1,7 @@
+// === function_0000000000000000.c ===
+#include <stdint.h>
+/* decompiled by rerun; uintN_t locals; goto-form for irreducible regions */
+
+uint64_t function_0000000000000000(void) {
+    return (0);  /* 0x0000000000000002: ret  */
+}

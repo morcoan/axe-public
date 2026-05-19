@@ -1,0 +1,8 @@
+// === function_0000000000000000.c ===
+#include <stdint.h>
+/* decompiled by rerun; uintN_t locals; goto-form for irreducible regions */
+
+/* struct candidate on rcx: 2 field(s) at {0x8, 0x10} */
+uint64_t function_0000000000000000(void) {
+    return (rcx->field_8);  /* 0x0000000000000008: ret  */
+}
