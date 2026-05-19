@@ -47,6 +47,14 @@ cargo run --features vuln-discovery --bin axe-bench -- --help
 Generated analysis output belongs in ignored directories such as `out/` or
 `calibration_runs/`, not in source control.
 
+## Donations
+
+If AXE helps your work, donations are appreciated:
+
+- BTC: `3MsARRVoEYumH4n1jLSH6Ecvd1ToDTMb7L`
+- Ethereum / EVM: `0x435E1E637b744eCf75549AafEbf82b02451CdD50`
+- Solana: `JCRnqKCTKRF235PdoXx2VANoRZm5jNcW3qWTV8MB9qx1`
+
 ## Licensing
 
 This repository is source-available under `LICENSE.md`. You may use AXE for
