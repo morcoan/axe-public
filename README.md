@@ -51,9 +51,7 @@ Generated analysis output belongs in ignored directories such as `out/` or
 
 If AXE helps your work, donations are appreciated:
 
-- BTC: `3MsARRVoEYumH4n1jLSH6Ecvd1ToDTMb7L`
-- Ethereum / EVM: `0x435E1E637b744eCf75549AafEbf82b02451CdD50`
-- Solana: `JCRnqKCTKRF235PdoXx2VANoRZm5jNcW3qWTV8MB9qx1`
+https://buymeacoffee.com/dgresesjr
 
 ## Licensing
 
