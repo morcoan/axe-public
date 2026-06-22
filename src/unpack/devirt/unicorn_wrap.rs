@@ -34,7 +34,7 @@ pub enum EmulatorStepOutcome {
 mod live {
     use super::{EmulatorStepOutcome, UnpackError};
     use unicorn_engine::{
-        unicorn_const::{Arch, Mode, Permission},
+        unicorn_const::{Arch, Mode, Prot},
         RegisterX86, Unicorn,
     };
 
@@ -58,19 +58,19 @@ mod live {
         /// is a permissions string in the same compact format used by
         /// `RegionDescriptor.permissions` ("RWX" / "R-X" / "RW-" / ...).
         pub fn map_region(&mut self, va: u64, size: usize, perms: &str) -> Result<(), UnpackError> {
-            let mut p = Permission::NONE;
+            let mut p = Prot::NONE;
             if perms.contains('R') {
-                p |= Permission::READ;
+                p |= Prot::READ;
             }
             if perms.contains('W') {
-                p |= Permission::WRITE;
+                p |= Prot::WRITE;
             }
             if perms.contains('X') {
-                p |= Permission::EXEC;
+                p |= Prot::EXEC;
             }
             // Unicorn requires page-aligned mappings (4 KiB). Round size up.
             let aligned_size = (size + 0xFFF) & !0xFFF;
-            self.uc.mem_map(va, aligned_size, p).map_err(|e| {
+            self.uc.mem_map(va, aligned_size as u64, p).map_err(|e| {
                 UnpackError::Pipeline(format!("mem_map {:#x}+{:#x}: {:?}", va, aligned_size, e))
             })
         }

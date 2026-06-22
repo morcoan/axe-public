@@ -150,8 +150,7 @@ impl SmtBackend for Z3InProcessBackend {
         assumptions.push(target_track);
         assumption_to_node.push(query.target_branch);
 
-        let assumption_refs: Vec<&Bool<'_>> = assumptions.iter().collect();
-        let check = solver.check_assumptions(&assumption_refs);
+        let check = solver.check_assumptions(&assumptions);
         let elapsed = started.elapsed();
         let time_ms = elapsed.as_millis() as u64;
 

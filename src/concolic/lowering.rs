@@ -228,11 +228,15 @@ impl<'ctx> Z3Lowerer<'ctx> {
     /// or BV. Picks based on the DAG-declared Sort.
     fn lower_dynamic(&mut self, dag: &ExprDag, id: NodeId) -> Result<Dynamic<'ctx>, LoweringError> {
         match dag.sort_of(id) {
-            Sort::Bool => Ok(Dynamic::from_ast(&self.lower_bool(dag, id)?)),
-            Sort::Bv(_) => Ok(Dynamic::from_ast(&self.lower_bv(dag, id)?)),
-            Sort::Array { .. } => Err(LoweringError::UnsupportedExpr {
+            Some(Sort::Bool) => Ok(Dynamic::from_ast(&self.lower_bool(dag, id)?)),
+            Some(Sort::Bv(_)) => Ok(Dynamic::from_ast(&self.lower_bv(dag, id)?)),
+            Some(Sort::Array { .. }) => Err(LoweringError::UnsupportedExpr {
                 backend: BACKEND_NAME,
                 detail: "array sort not lowerable to Dynamic".into(),
+            }),
+            None => Err(LoweringError::UnsupportedExpr {
+                backend: BACKEND_NAME,
+                detail: "node has no declared sort".into(),
             }),
         }
     }
