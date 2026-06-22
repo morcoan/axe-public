@@ -10,6 +10,10 @@ calibration_runs/
 # Claude Code agent session state — not part of the project source.
 .claude/
 
+# Z3 trace artifact dropped in the repo root by the in-process Z3
+# backend (concolic-z3-inproc) at runtime — generated, not source.
+.z3-trace
+
 # Legacy Python remnants — runtime/build artifacts from the pre-v1 toolchain.
 # Safe to delete from working tree; not part of the v1+ build.
 .venv/
